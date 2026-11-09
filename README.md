@@ -12,7 +12,7 @@ git clone https://github.com/sky-monkey007/clingon.git
 
 Add the $PATH environment or do a "cp clingon /usr/local/bin" after cloning.
 
-This is a Linux port of Clingon and may still have some bugs. Brew installation is not supported yet for this fork. Please install/use it from a git clone.
+This is a Linux port of Clingon and may still have some bugs and font-glyph issues yet to be resolved. Brew installation is not supported yet for this fork. Please install/use it from a git clone.
 
 ## Use
 
