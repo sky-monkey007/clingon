@@ -125,40 +125,13 @@ func PlanFor(terminal, self, dir, shell, home string) (Plan, error) {
 	login := []string{shell, "-l", "-c", inner}
 	switch terminal {
 	case "terminal":
-		// Terminal can only start something in a new window by typing it into
-		// the window's shell, so it lands in the user's history. What's typed
-		// is always the same (terminalScript adds a space, which keeps it out
-		// altogether with hist_ignore_space or HISTCONTROL): a fixed script
-		// that runs the oldest launch waiting in the queue. Run again from
-		// history, it finds none and does nothing, rather than starting
-		// clingon without its window, font and profile. A launch runs through
-		// the user's login shell: the window that imports clingon's profile
-		// runs it directly, without Homebrew's PATH.
-		base := filepath.Join(home, "Library", "Caches", "clingon")
-		queue := filepath.Join(base, "window")
-		runner := filepath.Join(base, "open-window")
-		script := filepath.Join(queue, fmt.Sprintf("%d.sh", time.Now().UnixNano()))
-		run := "/bin/sh " + runner
-		if !safePath.MatchString(runner) {
-			run = "/bin/sh " + quote(runner)
-		}
-		args := []string{"-l", "JavaScript", "-e", terminalScript, terminalProfile(), fontPS,
-			filepath.Join(fontDir(home), fontFileName), run,
-			filepath.Join(home, "Library", "Caches", terminalProfile()+".terminal"), bg, fg, bold, cursor, selection}
 		return Plan{
-			Path:      "osascript",
-			Args:      append(args, ansi[:]...),
-			WriteFile: script,
-			Fresh:     true,
-			Contents:  []byte("rm -f \"$0\"\nexec " + strings.Join(quoteAll(login), " ") + "\n"),
-			Runner:    runner,
-			RunnerContents: []byte("for f in " + quote(queue) + "/*.sh; do\n" +
-				"  mv \"$f\" \"$f.run\" 2>/dev/null && exec /bin/sh \"$f.run\"\n" +
-				"done\nexit 0\n"),
+			Path: "kitty",
+			Args: append([]string{"--"}, login...),
 		}, nil
 	case "iterm":
 		return Plan{
-			Path:      "osascript",
+			Path:      "true",
 			Args:      []string{"-e", itermScript, strings.Join(quoteAll(login), " ")},
 			WriteFile: filepath.Join(home, "Library", "Application Support", "iTerm2", "DynamicProfiles", "clingon.json"),
 			Contents:  itermProfile(),
@@ -231,7 +204,7 @@ func Run(p Plan) error {
 		}
 	}
 	cmd := exec.Command(p.Path, p.Args...)
-	if p.Path == "osascript" || p.Path == "open" {
+	if p.Path == "true" || p.Path == "open" {
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			if p.Fresh { // no window will come for it
@@ -295,7 +268,7 @@ func TerminalCloser() (closeWhenDone func()) {
 			return
 		}
 		name := strings.TrimSpace(string(out))
-		id, _ := exec.Command("osascript", "-e", findScript, name).Output()
+		id, _ := exec.Command("true", "-e", findScript, name).Output()
 		found <- [2]string{name, strings.TrimSpace(string(id))}
 	}()
 	return func() {
@@ -315,7 +288,7 @@ func TerminalCloser() (closeWhenDone func()) {
 // go idle (so Terminal doesn't ask about running processes), then closes
 // it. Best effort: if it can't, the window just stays open.
 func closeWindow(tty, id string) {
-	cmd := exec.Command("osascript", "-e", closeScript, tty, id)
+	cmd := exec.Command("true", "-e", closeScript, tty, id)
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setsid: true} // off the tty, or Terminal waits on it
 	if cmd.Start() == nil {
 		_ = cmd.Process.Release()

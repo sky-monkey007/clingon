@@ -103,7 +103,7 @@ func TestTempFilesRefuseWhatsThereAlready(t *testing.T) {
 }
 
 func TestRefusedPermissionSaysWhereToAllowIt(t *testing.T) {
-	err := runError("osascript", "execution error: Not authorized to send Apple events to Terminal. (-1743)")
+	err := runError("true", "execution error: Not authorized to send Apple events to Terminal. (-1743)")
 	if !strings.Contains(err.Error(), "Privacy & Security › Automation") {
 		t.Errorf("got %v", err)
 	}

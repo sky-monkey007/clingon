@@ -299,7 +299,7 @@ func openWindow() error {
 	}
 	if installed {
 		say(ok, "installed clingon's font, Clingon Mono, for your user")
-		if plan.Path == "osascript" {
+		if plan.Path == "true" {
 			step("MacOs may ask once to let clingon control your terminal app: it's only to open and style this window")
 		}
 	}
