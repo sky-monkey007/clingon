@@ -8,11 +8,11 @@ Type `clingon`. Commands open on the left and your shell on the right. Pick a co
 
 ## Install
 
-```sh
-brew install con-dog/tap/clingon
-```
+git clone https://github.com/sky-monkey007/clingon.git
 
-Needs MacOs, with zsh or bash as your login shell. Homebrew brings everything else, including tab completion.
+Add the $PATH environment or do a "cp clingon /usr/local/bin" after cloning.
+
+This is a Linux port of Clingon and may still have some bugs. Brew installation is not supported yet for this fork. Please install/use it from a git clone.
 
 ## Use
 
