@@ -1,4 +1,6 @@
-# clingon
+# clingon for Linux
+
+This is a Linux port of the Clingon for MacOS: https://github.com/con-dog/clingon
 
 ![clingon: pick commands from a menu, run them in a real shell beside it](media/clingon-intro.gif.png)
 
